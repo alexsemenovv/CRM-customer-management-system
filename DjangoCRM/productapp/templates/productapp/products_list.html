@@ -1,0 +1,19 @@
+{% extends "productapp/base.html" %}
+
+{% block body %}
+<h2 class="fw-bold">Услуги</h2>
+<div class="row bg-white px-3 py-3 mx-2 my-5 rounded pb-5 shadow-lg">
+    {% if products %}
+        {% for product in products %}
+            <p>id {{ product.pk }}</p>
+            <p>Название услуги: {{ product.name }}</p>
+            <p>Описание: {{ product.description }}</p>
+            <p>Стоимость: {{ product.price }}</p>
+            <br>
+        {% endfor %}
+    {% endif %}
+    <div class="hstack gap-3 pb-4">
+        <a href="/products/new" class="btn btn-success p-2">Создать</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,9 +1,14 @@
 from django.urls import path
 
+
 from .views import (
     ProductCreate,
+    ProductsListView,
 )
 
+app_name = "productapp"
+
 urlpatterns = [
-    path('create/', ProductCreate.as_view(), name='product_create'),
+    path('', ProductsListView.as_view(), name='products_list'),
+    path('new/', ProductCreate.as_view(), name='products_create'),
 ]
