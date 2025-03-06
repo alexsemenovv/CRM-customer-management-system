@@ -21,4 +21,5 @@ urlpatterns = [
     path('myauth/', include('myauth.urls')),
     path('products/', include('productapp.urls')),
     path('ads/', include('adsapp.urls')),
+    path('leads', include('leadsapp.urls')),
 ]

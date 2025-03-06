@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'myauth.apps.MyauthConfig',
     'productapp.apps.ProductappConfig',
     'adsapp.apps.AdsappConfig',
+    'leadsapp.apps.LeadsappConfig',
 ]
 
 MIDDLEWARE = [
