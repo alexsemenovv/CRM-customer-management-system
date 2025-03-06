@@ -10,7 +10,9 @@
                 <h5 class="card-title fw-bold">{{ object.title }}</h5>
                 <p class="card-text">{{ object.product.name }}. Дата: с {{ object.date_signed }} по {{ object.valid_until }}</p>
                 <div class="d-flex justify-content-end fw-bold">{{ object.cost }}руб</div>
-
+                <div class="d-flex justify-content-center fw-bold">
+                    <a href="/contracts/{{ object.pk }}/edit" class="btn btn-primary">Редактировать</a>
+                </div>
             </div>
         </div>
     </div>

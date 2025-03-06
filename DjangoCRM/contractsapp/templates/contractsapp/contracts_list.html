@@ -6,8 +6,15 @@
     <div class="hstack gap-3 pb-4">
         <a href="/contracts/new" class="btn btn-success p-2">Создать</a>
     </div>
-    {% for contract in contracts %}
-      <p>Title: {{ contract.title }}</p>
-    {% endfor %}
+    <div class="col">
+        <ul class="list-group">
+            {% for contract in contracts %}
+            <li class="list-group-item list-group-item-light d-flex justify-content-between">
+                <a href="/contracts/{{ contract.pk }}" class="text-decoration-none link-dark">{{ contract.title }}</a>
+                <a href="/contracts/{{ contract.pk }}/delete" class="btn btn-danger">Удалить</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}
