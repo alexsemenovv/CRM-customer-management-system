@@ -1,7 +1,7 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
-    ListView, DetailView,
+    ListView, DetailView, UpdateView,
 )
 
 from .models import Contract
@@ -27,3 +27,20 @@ class ContractDetailsView(DetailView):
     """Просмотр деталей контракта"""
     template_name = "contractsapp/contracts_detail.html"
     model = Contract
+
+
+class ContractUpdateView(UpdateView):
+    """Редактирование контракта"""
+    template_name = "contractsapp/contracts_update.html"
+    model = Contract
+    form_class = ContractForm
+
+    def get_success_url(self):
+        """
+        После успешного обновления 'контракта',
+        перенаправляемся на этот URL
+        """
+        return reverse(
+            "contractsapp:contracts_detail",
+            kwargs={"pk": self.object.pk},
+        )
