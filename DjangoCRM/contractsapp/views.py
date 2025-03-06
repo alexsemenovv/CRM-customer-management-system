@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
-    ListView,
+    ListView, DetailView,
 )
 
 from .models import Contract
@@ -20,5 +20,10 @@ class ContractCreateView(CreateView):
     template_name = "contractsapp/contracts_create.html"
     model = Contract
     form_class = ContractForm
-    # fields = "title", "product", "document", "end_date", "cost"
     success_url = reverse_lazy("contractsapp:contracts_list")
+
+
+class ContractDetailsView(DetailView):
+    """Просмотр деталей контракта"""
+    template_name = "contractsapp/contracts_detail.html"
+    model = Contract
