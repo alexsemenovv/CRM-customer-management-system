@@ -2,6 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
     CreateView,
+    DetailView,
 )
 
 from .models import Ad
@@ -21,3 +22,9 @@ class AdsCreateView(CreateView):
     fields = "name", "product", "promotion_channel", "advertising_budget"
 
     success_url = reverse_lazy("adsapp:ads_list")
+
+
+class AdsDetailView(DetailView):
+    """Просмотр деталей компании"""
+    template_name = "adsapp/ads_detail.html"
+    model = Ad
