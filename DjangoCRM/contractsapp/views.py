@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
-    ListView, DetailView, UpdateView,
+    ListView, DetailView, UpdateView, DeleteView,
 )
 
 from .models import Contract
@@ -44,3 +44,10 @@ class ContractUpdateView(UpdateView):
             "contractsapp:contracts_detail",
             kwargs={"pk": self.object.pk},
         )
+
+
+class ContractDeleteView(DeleteView):
+    """Удаление контракта"""
+    template_name = "contractsapp/contracts_delete.html"
+    model = Contract
+    success_url = reverse_lazy("contractsapp:contracts_list")
