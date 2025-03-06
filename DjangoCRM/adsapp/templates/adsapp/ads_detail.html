@@ -11,6 +11,9 @@
                 <p class="card-text">{{ object.product.name }}</p>
                 <p class="card-text">{{ object.promotion_channel }}</p>
                 <div class="d-flex justify-content-end fw-bold">{{ object.advertising_budget }}руб</div>
+                <div class="d-flex justify-content-center fw-bold">
+                    <a href="/ads/{{ object.pk }}/edit" class="btn btn-primary">Редактировать</a>
+                </div>
             </div>
         </div>
     </div>
