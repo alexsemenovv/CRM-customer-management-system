@@ -1,10 +1,9 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
     ListView,
-    DetailView,
+    DetailView, UpdateView,
 )
-
 
 from .models import Product
 
@@ -28,3 +27,17 @@ class ProductDetailsView(DetailView):
     """Просмотр деталей услуги"""
     template_name = "productapp/products_detail.html"
     model = Product
+
+
+class ProductUpdateView(UpdateView):
+    """Редактирование услуги"""
+    template_name = "productapp/products_update.html"
+    model = Product
+    fields = ['name', 'description', 'price']
+
+    def get_success_url(self):
+        """После успешного обновления 'услуги' перенаправляемся на этот URL"""
+        return reverse(
+            "productapp:products_detail",
+            kwargs={"pk": self.object.pk},
+        )
