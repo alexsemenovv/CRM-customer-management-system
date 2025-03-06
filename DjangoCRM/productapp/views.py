@@ -13,7 +13,7 @@ class ProductsListView(ListView):
 
 class ProductCreate(CreateView):
     """Создание новой услуги"""
-    template_name = "productapp/products_form.html"
+    template_name = "productapp/products_create.html"
     model = Product
     fields = "name", "description", "price"
     success_url = reverse_lazy("productapp:products_list")
