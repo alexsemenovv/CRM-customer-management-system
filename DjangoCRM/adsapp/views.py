@@ -2,7 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
     CreateView,
-    DetailView,
+    DetailView, UpdateView,
 )
 
 from .models import Ad
@@ -28,3 +28,20 @@ class AdsDetailView(DetailView):
     """Просмотр деталей компании"""
     template_name = "adsapp/ads_detail.html"
     model = Ad
+
+
+class AdsUpdateView(UpdateView):
+    """Редактирование компании"""
+    template_name = "adsapp/ads_update.html"
+    model = Ad
+    fields = "name", "product", "promotion_channel", "advertising_budget"
+
+    def get_success_url(self):
+        """
+        В случае успешного обновления,
+        происходит перенаправление на страницу с деталями компании
+        """
+        return reverse(
+            "adsapp:ads_detail",
+            kwargs={"pk": self.object.pk},
+        )
