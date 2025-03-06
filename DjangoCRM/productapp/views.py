@@ -2,7 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
     ListView,
-    DetailView, UpdateView,
+    DetailView, UpdateView, DeleteView,
 )
 
 from .models import Product
@@ -41,3 +41,10 @@ class ProductUpdateView(UpdateView):
             "productapp:products_detail",
             kwargs={"pk": self.object.pk},
         )
+
+
+class ProductDeleteView(DeleteView):
+    """Удаление услуги"""
+    template_name = "productapp/products_delete.html"
+    model = Product
+    success_url = reverse_lazy("productapp:products_list")
