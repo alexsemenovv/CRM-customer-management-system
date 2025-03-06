@@ -2,7 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
     CreateView,
-    DetailView, UpdateView,
+    DetailView, UpdateView, DeleteView,
 )
 
 from .models import Ad
@@ -45,3 +45,9 @@ class AdsUpdateView(UpdateView):
             "adsapp:ads_detail",
             kwargs={"pk": self.object.pk},
         )
+
+class AdsDeleteView(DeleteView):
+    """Удаление рекламной компании"""
+    template_name = "adsapp/ads_delete.html"
+    model = Ad
+    success_url = reverse_lazy("adsapp:ads_list")
