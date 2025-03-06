@@ -1,3 +1,9 @@
 from django.urls import path
 
-urlpatterns = []
+from .views import (
+    AdsListView,
+)
+
+urlpatterns = [
+    path('', AdsListView.as_view(), name='ads_list'),
+]
