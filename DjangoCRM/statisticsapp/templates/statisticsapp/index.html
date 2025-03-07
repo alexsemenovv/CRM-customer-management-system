@@ -66,22 +66,18 @@
     <div class="col">
         <div class="card border-light shadow" style="background: #eee">
             <div class="card-body">
-                <h5 class="card-title fw-bold">
-                    <a href="/leads/" class="link-dark text-decoration-none">Лидов</a>
-                </h5>
-                <i class="fas fa-user-clock float-end"></i>
-                <p class="card-text fw-bold fs-1">{{ leads|length }}</p>
+                <h3 class="card-title fw-bold">
+                    <a href="/leads/" class="link-dark text-decoration-none">Количество лидов: {{ leads.count }}</a>
+                </h3>
             </div>
         </div>
     </div>
     <div class="col">
         <div class="card border-light shadow">
             <div class="card-body" style="background: #eee">
-                <h5 class="card-title fw-bold">
-                    <a href="/customers/" class="link-dark text-decoration-none">Активных клиентов</a>
-                </h5>
-                <i class="fas fa-user-check float-end"></i>
-                <p class="card-text fw-bold fs-1">{{ customers|length }}</p>
+                <h3 class="card-title fw-bold">
+                    <a href="/customers/" class="link-dark text-decoration-none">Количество активных клиентов: {{ customers.count }}</a>
+                </h3>
             </div>
         </div>
     </div>

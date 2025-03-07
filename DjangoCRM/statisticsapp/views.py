@@ -1,5 +1,6 @@
 from http.client import HTTPResponse
 
+from django.db.models import Count
 from django.http import HttpRequest
 from django.shortcuts import render
 
@@ -13,8 +14,8 @@ from productapp.models import Product
 def get_statistics(request: HttpRequest) -> HTTPResponse:
     """Функция считает общую статистику"""
     products = Product.objects.all()  # услуги
-    leads = Lead.objects.all()  # потенциальные клиенты
-    customers = Customer.objects.all()  # активные клиенты
+    leads = Lead.objects.annotate(count=Count("id"))  # потенциальные клиенты
+    customers = Customer.objects.annotate(count=Count("id"))  # активные клиенты
     ads = Lead.objects.raw(
         """
         select aa.id, aa.name, COUNT(ll.id) as count
@@ -23,6 +24,7 @@ def get_statistics(request: HttpRequest) -> HTTPResponse:
         GROUP BY aa.id
         """
     )
+    print(customers)
 
     context = {
         "products": products,
