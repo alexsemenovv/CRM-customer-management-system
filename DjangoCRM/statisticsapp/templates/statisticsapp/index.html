@@ -47,6 +47,7 @@
                             <th>ID</th>
                             <th>Компания</th>
                             <th>Привлеченных клиентов</th>
+                            <th>Успешность компании в %</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,7 +55,8 @@
                             <tr>
                                 <td>{{ ad.id }}</td>
                                 <td><a href="/ads/{{ ad.pk }}" class="text-decoration-none link-dark">{{ ad.name }}</a></td>
-                                <td>{{ ad.count }}</td>
+                                <td>{{ ad.count_leads }}</td>
+                                <td>{{ ad.company_success }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
