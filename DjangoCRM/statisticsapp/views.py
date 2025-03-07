@@ -33,7 +33,5 @@ def get_statistics(request: HttpRequest) -> HTTPResponse:
     return render(request, "statisticsapp/index.html", context=context)
 
 # TODO
-#  Статистику считают по нескольким критериям:
-#  число клиентов, привлечённых рекламной кампанией;
 #  число клиентов, перешедших из потенциальных в активных;
 #  соотношение дохода от контрактов и расходов на рекламу.
