@@ -1,11 +1,10 @@
 from http.client import HTTPResponse
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, ExpressionWrapper, F, DecimalField
 from django.http import HttpRequest
 from django.shortcuts import render
 
 from adsapp.models import Ad
-from contractsapp.models import Contract
 from customersapp.models import Customer
 from leadsapp.models import Lead
 from productapp.models import Product
@@ -24,19 +23,12 @@ def get_statistics(request: HttpRequest) -> HTTPResponse:
     leads = Lead.objects.annotate(count=Count("id"))  # потенциальные клиенты
     customers = Customer.objects.annotate(count=Count("id"))  # активные клиенты
 
-    ads = Lead.objects.raw(
-        """
-        SELECT 
-            aa.id,
-            aa.name,
-            COUNT(ll.id) as count_leads,
-            (SUM(cc.cost) - aa.advertising_budget) / 100 as company_success
-        FROM contractsapp_contract cc 
-        JOIN productapp_product pp on pp.id = cc.product_id
-        JOIN adsapp_ad aa on aa.product_id  = pp.id
-        JOIN leadsapp_lead ll on ll.ad_id = aa.id
-        GROUP BY aa.id
-        """
+    ads = Ad.objects.annotate(
+        count_leads=Count('lead'),
+        company_success=ExpressionWrapper(
+            (Sum('product__contract__cost') - F('advertising_budget')),
+            output_field=DecimalField()
+        )
     )
 
     context = {
