@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -12,15 +13,17 @@ from leadsapp.models import Lead
 from .models import Customer
 
 
-class CustomerListView(ListView):
+class CustomerListView(PermissionRequiredMixin, ListView):
     """Просмотр всех активных клиентов"""
+    permission_required = "customersapp.view_customer"
     template_name = "customersapp/customers_list.html"
     context_object_name = 'customers'
     queryset = Customer.objects.select_related('lead', 'contract').all()
 
 
-class CustomerCreateView(CreateView):
+class CustomerCreateView(PermissionRequiredMixin, CreateView):
     """Создание активного пользователя"""
+    permission_required = "customersapp.add_customer"
     template_name = "customersapp/customers_create.html"
     model = Customer
     fields = "lead", "contract"
@@ -36,14 +39,16 @@ class CustomerCreateView(CreateView):
         return initial
 
 
-class CustomerDetailsView(DetailView):
+class CustomerDetailsView(PermissionRequiredMixin, DetailView):
     """Просмотр деталей активного пользователя"""
+    permission_required = "customersapp.view_customer"
     template_name = "customersapp/customers_detail.html"
     model = Customer
 
 
-class CustomerUpdateView(UpdateView):
+class CustomerUpdateView(PermissionRequiredMixin, UpdateView):
     """Редактирование активного пользователя"""
+    permission_required = "customersapp.change_customer"
     template_name = "customersapp/customers_update.html"
     model = Customer
     fields = "lead", "contract"
@@ -59,8 +64,9 @@ class CustomerUpdateView(UpdateView):
         )
 
 
-class CustomerDeleteView(DeleteView):
+class CustomerDeleteView(PermissionRequiredMixin, DeleteView):
     """Удаление активного пользователя"""
+    permission_required = "customersapp.delete_customer"
     template_name = "customersapp/customers_delete.html"
     model = Customer
     success_url = reverse_lazy("customersapp:customers_list")
