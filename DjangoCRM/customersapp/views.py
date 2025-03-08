@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
@@ -7,6 +8,7 @@ from django.views.generic import (
     DeleteView,
 )
 
+from leadsapp.models import Lead
 from .models import Customer
 
 
@@ -23,6 +25,15 @@ class CustomerCreateView(CreateView):
     model = Customer
     fields = "lead", "contract"
     success_url = reverse_lazy("customersapp:customers_list")
+
+    def get_initial(self):
+        """Предзаполняет поле 'lead' при создании нового клиента"""
+        initial = super().get_initial()
+        lead_id = self.request.GET.get("lead_id")  # Получаем lead_id из URL
+        if lead_id:
+            lead = get_object_or_404(Lead, pk=lead_id)
+            initial["lead"] = lead
+        return initial
 
 
 class CustomerDetailsView(DetailView):
