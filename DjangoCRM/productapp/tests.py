@@ -1,19 +1,9 @@
 """
-Модуль для тестирования функций приложений
-Приложения:
-    - Product app - услуги
-    - Ads app - рекламные компании
-    - Leads app - лиды
-    - Contracts app - контракты
-    - Сustomers app - клиенты
-    - Myauth - приложения для аутентификации
-    - Statistics app - статистика
-
+Модуль для тестирования функций приложения ProductApp
 Созданные роли:
-    -  Aleksandr - Администратор
+    - admin - Админ
     - Irina - Оператор
     - Evgeniy - Маркетолог
-    - Svetlana - Менеджер
 """
 import random
 
@@ -141,3 +131,44 @@ class UpdateProductTestCase(AuthenticatedTestCase):
             {"name": "Test", "price": 1}
         )
         self.assertNotEqual(response.status_code, 200)
+
+
+class DeleteProductTestCase(AuthenticatedTestCase):
+
+    def setUp(self):
+        """Добавляем новую услугу"""
+        super().setUp()
+        Product.objects.create(
+            name="Test for delete",
+            description="None",
+            price=0,
+        )
+        self.product = Product.objects.filter(price=0).first()
+
+    def test_negative_delete_product(self):
+        """Негативный тест на удаление услуги"""
+        response = self.client.post(
+            reverse("productapp:products_delete", kwargs={"pk": self.product.pk}),
+        )
+
+        # Получаем ошибку удаления из-за нехватки прав
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_product(self):
+        """Тест на удаление услуги"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Администратора
+        self.client.login(username='admin', password="admin")
+
+        # Отправляем запрос на удаление услуги
+        response = self.client.post(
+            reverse("productapp:products_delete", kwargs={"pk": self.product.pk}),
+        )
+        self.assertRedirects(response, "/products/")
+
+        # Проверяем, что заказ удален
+        self.assertFalse(Product.objects.filter(pk=self.product.pk).exists())
+
