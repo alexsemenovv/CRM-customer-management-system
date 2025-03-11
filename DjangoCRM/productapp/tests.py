@@ -73,3 +73,41 @@ class CreateProductTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 403)
 
+
+class DetailProductTestCase(TestCase):
+    fixtures = [
+        "fixtures/fixtures.xml",
+    ]
+
+    def setUp(self):
+        """Логинимся от имени маркетолога"""
+        self.client.login(username="Evgeniy", password="Abc9517850219")
+
+    def test_get_detail_product(self):
+        """Тест на просмотр деталей услуги"""
+        response = self.client.get(
+            reverse("productapp:products_detail",
+                    kwargs={"pk": 6}
+                    ),
+
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Услуга номер 4")
+
+    def test_negative_get_detail_product(self):
+        """Негативный тест на просмотр деталей услуги"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Оператора
+        self.client.login(username='Irina', password="Abc9002973474")
+
+        # Отправляем запрос на просмотр услуги
+        response = self.client.get(
+            reverse("productapp:products_detail",
+                    kwargs={"pk": 6}
+                    ),
+
+        )
+        self.assertNotEqual(response.status_code, 200)
