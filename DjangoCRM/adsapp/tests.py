@@ -82,38 +82,39 @@ class CreateAdTestCase(AuthenticatedTestCase):
         )
         self.assertEqual(response.status_code, 403)
 
-# class DetailAdTestCase(AuthenticatedTestCase):
-#
-#     def test_get_detail_ads(self):
-#         """Тест на просмотр деталей рекламной компании"""
-#         response = self.client.get(
-#             reverse("adsapp:ads_detail",
-#                     kwargs={"pk": 6}
-#                     ),
-#
-#         )
-#         self.assertEqual(response.status_code, 200)
-#         self.assertContains(response, "Услуга номер 4")
-#
-#     def test_negative_get_detail_ads(self):
-#         """Негативный тест на просмотр деталей рекламной компании"""
-#
-#         # выполняем logout
-#         self.client.logout()
-#
-#         # выполняем login от имени Оператора
-#         self.client.login(username='Irina', password="Abc9002973474")
-#
-#         # Отправляем запрос на просмотр рекламной компании
-#         response = self.client.get(
-#             reverse("adsapp:ads_detail",
-#                     kwargs={"pk": 6}
-#                     ),
-#
-#         )
-#         self.assertNotEqual(response.status_code, 200)
-#
-#
+
+class DetailAdTestCase(AuthenticatedTestCase):
+
+    def test_get_detail_ads(self):
+        """Тест на просмотр деталей рекламной компании"""
+        response = self.client.get(
+            reverse("adsapp:ads_detail",
+                    kwargs={"pk": 1}
+                    ),
+
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Контекстная реклама 1")
+
+
+    def test_negative_get_detail_ads(self):
+        """Негативный тест на просмотр деталей рекламной компании"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Оператора
+        self.client.login(username='Irina', password="Abc9002973474")
+
+        # Отправляем запрос на просмотр рекламной компании
+        response = self.client.get(
+            reverse("adsapp:ads_detail",
+                    kwargs={"pk": 1}
+                    ),
+
+        )
+        self.assertNotEqual(response.status_code, 200)
+
 # class AdListTestCase(AuthenticatedTestCase):
 #
 #     def test_list_ads(self):
