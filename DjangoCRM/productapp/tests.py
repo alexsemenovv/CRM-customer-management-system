@@ -102,6 +102,33 @@ class DetailProductTestCase(AuthenticatedTestCase):
         self.assertNotEqual(response.status_code, 200)
 
 
+class ProductListTestCase(AuthenticatedTestCase):
+
+    def test_list_product(self):
+        """Тест на просмотр списка услуг"""
+        response = self.client.get(reverse("productapp:products_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "productapp/products_list.html")
+        self.assertQuerysetEqual(
+            qs=list(Product.objects.all()),
+            values=(p.pk for p in response.context["products"]),
+            transform=lambda p: p.pk,
+        )
+
+    def test_negative_list_product(self):
+        """Негативный тест на просмотр списка услуг"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Оператора
+        self.client.login(username='Irina', password="Abc9002973474")
+
+        # Отправляем запрос на просмотр услуг
+        response = self.client.get(reverse("productapp:products_list"))
+        self.assertEqual(response.status_code, 403)
+
+
 class UpdateProductTestCase(AuthenticatedTestCase):
 
     def test_update_product(self):
@@ -171,4 +198,3 @@ class DeleteProductTestCase(AuthenticatedTestCase):
 
         # Проверяем, что заказ удален
         self.assertFalse(Product.objects.filter(pk=self.product.pk).exists())
-
