@@ -96,7 +96,6 @@ class DetailAdTestCase(AuthenticatedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Контекстная реклама 1")
 
-
     def test_negative_get_detail_ads(self):
         """Негативный тест на просмотр деталей рекламной компании"""
 
@@ -115,99 +114,125 @@ class DetailAdTestCase(AuthenticatedTestCase):
         )
         self.assertNotEqual(response.status_code, 200)
 
-# class AdListTestCase(AuthenticatedTestCase):
-#
-#     def test_list_ads(self):
-#         """Тест на просмотр списка услуг"""
-#         response = self.client.get(reverse("adsapp:ads_list"))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, "adsapp/ads_list.html")
-#         self.assertQuerysetEqual(
-#             qs=list(Ad.objects.all()),
-#             values=(p.pk for p in response.context["ads"]),
-#             transform=lambda p: p.pk,
-#         )
-#
-#     def test_negative_list_ads(self):
-#         """Негативный тест на просмотр списка услуг"""
-#
-#         # выполняем logout
-#         self.client.logout()
-#
-#         # выполняем login от имени Оператора
-#         self.client.login(username='Irina', password="Abc9002973474")
-#
-#         # Отправляем запрос на просмотр услуг
-#         response = self.client.get(reverse("adsapp:ads_list"))
-#         self.assertEqual(response.status_code, 403)
-#
-#
-# class UpdateAdTestCase(AuthenticatedTestCase):
-#
-#     def test_update_ads(self):
-#         """Тест на обновление рекламной компании"""
-#         random_number = random.randint(1, 10000)
-#         response = self.client.post(
-#             reverse("adsapp:ads_update", kwargs={"pk": 6}),
-#             {"name": "Test", "price": random_number}
-#         )
-#         self.assertRedirects(response, reverse("adsapp:ads_detail", kwargs={"pk": 6}))
-#         self.assertTrue(
-#             Ad.objects.filter(Q(pk=6) & Q(price=random_number)).exists()
-#         )
-#
-#     def test_negative_update_ads(self):
-#         """Негативный тест на обновление рекламной компании"""
-#
-#         # выполняем logout
-#         self.client.logout()
-#
-#         # выполняем login от имени Оператора
-#         self.client.login(username='Irina', password="Abc9002973474")
-#
-#         # Отправляем запрос на обновление рекламной компании
-#         response = self.client.post(
-#             reverse("adsapp:ads_update", kwargs={"pk": 6}),
-#             {"name": "Test", "price": 1}
-#         )
-#         self.assertNotEqual(response.status_code, 200)
-#
-#
-# class DeleteAdTestCase(AuthenticatedTestCase):
-#
-#     def setUp(self):
-#         """Добавляем новую рекламную компанию"""
-#         super().setUp()
-#         Ad.objects.create(
-#             name="Test for delete",
-#             description="None",
-#             price=0,
-#         )
-#         self.ads = Ad.objects.filter(price=0).first()
-#
-#     def test_negative_delete_ads(self):
-#         """Негативный тест на удаление рекламной компании"""
-#         response = self.client.post(
-#             reverse("adsapp:ads_delete", kwargs={"pk": self.ads.pk}),
-#         )
-#
-#         # Получаем ошибку удаления из-за нехватки прав
-#         self.assertEqual(response.status_code, 403)
-#
-#     def test_delete_ads(self):
-#         """Тест на удаление рекламной компании"""
-#
-#         # выполняем logout
-#         self.client.logout()
-#
-#         # выполняем login от имени Администратора
-#         self.client.login(username='admin', password="admin")
-#
-#         # Отправляем запрос на удаление рекламной компании
-#         response = self.client.post(
-#             reverse("adsapp:ads_delete", kwargs={"pk": self.ads.pk}),
-#         )
-#         self.assertRedirects(response, "/ads/")
-#
-#         # Проверяем, что заказ удален
-#         self.assertFalse(Ad.objects.filter(pk=self.Ad.pk).exists())
+
+class AdListTestCase(AuthenticatedTestCase):
+
+    def test_list_ads(self):
+        """Тест на просмотр списка услуг"""
+        response = self.client.get(reverse("adsapp:ads_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "adsapp/ads_list.html")
+        self.assertQuerysetEqual(
+            qs=list(Ad.objects.all()),
+            values=(p.pk for p in response.context["ads"]),
+            transform=lambda p: p.pk,
+        )
+
+    def test_negative_list_ads(self):
+        """Негативный тест на просмотр списка услуг"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Оператора
+        self.client.login(username='Irina', password="Abc9002973474")
+
+        # Отправляем запрос на просмотр услуг
+        response = self.client.get(reverse("adsapp:ads_list"))
+        self.assertEqual(response.status_code, 403)
+
+
+class UpdateAdTestCase(AuthenticatedTestCase):
+    def setUp(self):
+        super().setUp()
+        self.product = Product.objects.filter(id=3).first()
+
+    def test_update_ads(self):
+        """Тест на обновление рекламной компании"""
+
+        random_number = random.randint(1, 1000)
+        response = self.client.post(
+            reverse("adsapp:ads_update", kwargs={"pk": 1}),
+            {
+                "name": "Контекстная реклама 1",
+                "product": self.product.id,
+                "promotion_channel": "Яндекс, Google",
+                "advertising_budget": random_number,
+            }
+        )
+        self.assertRedirects(response, reverse("adsapp:ads_detail", kwargs={"pk": 1}))
+        self.assertTrue(
+            Ad.objects.filter(Q(pk=1) & Q(advertising_budget=random_number)).exists()
+        )
+
+    def test_negative_update_ads(self):
+        """Негативный тест на обновление рекламной компании"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Оператора
+        self.client.login(username='Irina', password="Abc9002973474")
+
+        # Отправляем запрос на обновление рекламной компании
+        response = self.client.post(
+            reverse("adsapp:ads_update", kwargs={"pk": 1}),
+            {
+                "name": "Контекстная реклама 1",
+                "product": self.product.id,
+                "promotion_channel": "Яндекс, Google",
+                "advertising_budget": 1,
+            }
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+
+class DeleteAdTestCase(AuthenticatedTestCase):
+
+    def setUp(self):
+        """Добавляем новую рекламную компанию"""
+        super().setUp()
+
+        # создаём услугу
+        Product.objects.create(
+            name="Test product",
+            description="None",
+            price=0,
+        )
+        self.product = Product.objects.filter(price=0).first()
+
+        # создаём компанию
+        Ad.objects.create(
+            name="Test Ad",
+            product=self.product,
+            promotion_channel="Instagram",
+            advertising_budget=1,
+        )
+        self.ad = Ad.objects.filter(advertising_budget=1).first()
+
+    def test_negative_delete_ads(self):
+        """Негативный тест на удаление рекламной компании"""
+        response = self.client.post(
+            reverse("adsapp:ads_delete", kwargs={"pk": self.ad.pk}),
+        )
+
+        # Получаем ошибку удаления из-за нехватки прав
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_ads(self):
+        """Тест на удаление рекламной компании"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Администратора
+        self.client.login(username='admin', password="admin")
+
+        # Отправляем запрос на удаление рекламной компании
+        response = self.client.post(
+            reverse("adsapp:ads_delete", kwargs={"pk": self.ad.pk}),
+        )
+        self.assertRedirects(response, "/ads/")
+
+        # Проверяем, что заказ удален
+        self.assertFalse(Ad.objects.filter(pk=self.ad.pk).exists())
