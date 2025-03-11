@@ -15,15 +15,17 @@
     - Evgeniy - Маркетолог
     - Svetlana - Менеджер
 """
+import random
 
+from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
 
 from productapp.models import Product
 
 
-class CreateProductTestCase(TestCase):
-    """Проверка создания услуги"""
+class AuthenticatedTestCase(TestCase):
+    """Аутентификация пользователя и загрузка фикстур"""
     fixtures = [
         "fixtures/fixtures.xml",
     ]
@@ -31,6 +33,10 @@ class CreateProductTestCase(TestCase):
     def setUp(self):
         """Логинимся от имени маркетолога"""
         self.client.login(username="Evgeniy", password="Abc9517850219")
+
+
+class CreateProductTestCase(AuthenticatedTestCase):
+    """Проверка создания услуги"""
 
     def tearDown(self):
         """Удаляем услугу после теста"""
@@ -74,14 +80,7 @@ class CreateProductTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class DetailProductTestCase(TestCase):
-    fixtures = [
-        "fixtures/fixtures.xml",
-    ]
-
-    def setUp(self):
-        """Логинимся от имени маркетолога"""
-        self.client.login(username="Evgeniy", password="Abc9517850219")
+class DetailProductTestCase(AuthenticatedTestCase):
 
     def test_get_detail_product(self):
         """Тест на просмотр деталей услуги"""
@@ -109,5 +108,36 @@ class DetailProductTestCase(TestCase):
                     kwargs={"pk": 6}
                     ),
 
+        )
+        self.assertNotEqual(response.status_code, 200)
+
+
+class UpdateProductTestCase(AuthenticatedTestCase):
+
+    def test_update_product(self):
+        """Тест на обновление услуги"""
+        random_number = random.randint(1, 10000)
+        response = self.client.post(
+            reverse("productapp:products_update", kwargs={"pk": 6}),
+            {"name": "Test", "price": random_number}
+        )
+        self.assertRedirects(response, reverse("productapp:products_detail", kwargs={"pk": 6}))
+        self.assertTrue(
+            Product.objects.filter(Q(pk=6) & Q(price=random_number)).exists()
+        )
+
+    def test_negative_update_product(self):
+        """Негативный тест на обновление услуги"""
+
+        # выполняем logout
+        self.client.logout()
+
+        # выполняем login от имени Оператора
+        self.client.login(username='Irina', password="Abc9002973474")
+
+        # Отправляем запрос на обновление услуги
+        response = self.client.post(
+            reverse("productapp:products_update", kwargs={"pk": 6}),
+            {"name": "Test", "price": 1}
         )
         self.assertNotEqual(response.status_code, 200)
