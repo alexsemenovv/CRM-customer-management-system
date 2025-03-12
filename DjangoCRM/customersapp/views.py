@@ -27,7 +27,7 @@ class CustomerCreateView(PermissionRequiredMixin, CreateView):
     template_name = "customersapp/customers_create.html"
     model = Customer
     fields = "lead", "contract"
-    success_url = reverse_lazy("customersapp:customers_list")
+    success_url = reverse_lazy("leadsapp:leads_list")
 
     def get_initial(self):
         """Предзаполняет поле 'lead' при создании нового клиента"""
