@@ -5,18 +5,19 @@
     - Irina - Оператор
     - Evgeniy - Маркетолог
 """
+
 import random
 
+from adsapp.models import Ad
 from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
-
-from adsapp.models import Ad
 from productapp.models import Product
 
 
 class AuthenticatedTestCase(TestCase):
     """Аутентификация пользователя и загрузка фикстур"""
+
     fixtures = [
         "fixtures/fixtures.xml",
     ]
@@ -40,7 +41,7 @@ class CreateAdTestCase(AuthenticatedTestCase):
 
     def tearDown(self):
         """Удаляем рекламную компанию после теста"""
-        Ad.objects.filter(advertising_budget=10 ** 6).delete()
+        Ad.objects.filter(advertising_budget=10**6).delete()
         Product.objects.filter(price=1).delete()
 
     def test_create_ads(self) -> None:
@@ -53,11 +54,11 @@ class CreateAdTestCase(AuthenticatedTestCase):
                 "name": "Тестовая рекламная компания",
                 "product": self.product.id,
                 "promotion_channel": "Instagram",
-                "advertising_budget": 10 ** 5,
-            }
+                "advertising_budget": 10**5,
+            },
         )
         self.assertRedirects(response, reverse("adsapp:ads_list"))
-        self.assertTrue(Ad.objects.filter(advertising_budget=10 ** 5).exists())
+        self.assertTrue(Ad.objects.filter(advertising_budget=10**5).exists())
 
     def test_negative_create_ads(self) -> None:
         """
@@ -68,7 +69,7 @@ class CreateAdTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # Пробуем создать компанию
         response = self.client.post(
@@ -77,21 +78,20 @@ class CreateAdTestCase(AuthenticatedTestCase):
                 "name": "Тестовая рекламная компания",
                 "product": self.product.id,
                 "promotion_channel": "Instagram",
-                "advertising_budget": 10 ** 5,
-            }
+                "advertising_budget": 10**5,
+            },
         )
         self.assertEqual(response.status_code, 403)
 
 
 class DetailAdTestCase(AuthenticatedTestCase):
+    """Проверка просмотра деталей рекламной компании"""
+
 
     def test_get_detail_ads(self):
         """Тест на просмотр деталей рекламной компании"""
         response = self.client.get(
-            reverse("adsapp:ads_detail",
-                    kwargs={"pk": 1}
-                    ),
-
+            reverse("adsapp:ads_detail", kwargs={"pk": 1}),
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Контекстная реклама 1")
@@ -103,19 +103,17 @@ class DetailAdTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # Отправляем запрос на просмотр рекламной компании
         response = self.client.get(
-            reverse("adsapp:ads_detail",
-                    kwargs={"pk": 1}
-                    ),
-
+            reverse("adsapp:ads_detail", kwargs={"pk": 1}),
         )
         self.assertNotEqual(response.status_code, 200)
 
 
 class AdListTestCase(AuthenticatedTestCase):
+    """Проверка просмотра списка рекламных компаний"""
 
     def test_list_ads(self):
         """Тест на просмотр списка услуг"""
@@ -135,7 +133,7 @@ class AdListTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # Отправляем запрос на просмотр услуг
         response = self.client.get(reverse("adsapp:ads_list"))
@@ -143,6 +141,8 @@ class AdListTestCase(AuthenticatedTestCase):
 
 
 class UpdateAdTestCase(AuthenticatedTestCase):
+    """Проверка обновления рекламной компании"""
+
     def setUp(self):
         super().setUp()
         self.product = Product.objects.filter(id=3).first()
@@ -158,7 +158,7 @@ class UpdateAdTestCase(AuthenticatedTestCase):
                 "product": self.product.id,
                 "promotion_channel": "Яндекс, Google",
                 "advertising_budget": random_number,
-            }
+            },
         )
         self.assertRedirects(response, reverse("adsapp:ads_detail", kwargs={"pk": 1}))
         self.assertTrue(
@@ -172,7 +172,7 @@ class UpdateAdTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # Отправляем запрос на обновление рекламной компании
         response = self.client.post(
@@ -182,12 +182,13 @@ class UpdateAdTestCase(AuthenticatedTestCase):
                 "product": self.product.id,
                 "promotion_channel": "Яндекс, Google",
                 "advertising_budget": 1,
-            }
+            },
         )
         self.assertNotEqual(response.status_code, 200)
 
 
 class DeleteAdTestCase(AuthenticatedTestCase):
+    """Проверка удаления рекламной компании"""
 
     def setUp(self):
         """Добавляем новую рекламную компанию"""
@@ -226,7 +227,7 @@ class DeleteAdTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Администратора
-        self.client.login(username='admin', password="admin")
+        self.client.login(username="admin", password="admin")
 
         # Отправляем запрос на удаление рекламной компании
         response = self.client.post(

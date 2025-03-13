@@ -1,11 +1,10 @@
 from http.client import HTTPResponse
 
-from django.db.models import Count, Sum, ExpressionWrapper, F, DecimalField
-from django.http import HttpRequest
-from django.shortcuts import render, redirect
-
 from adsapp.models import Ad
 from customersapp.models import Customer
+from django.db.models import Count, DecimalField, ExpressionWrapper, F, Sum
+from django.http import HttpRequest
+from django.shortcuts import redirect, render
 from leadsapp.models import Lead
 from productapp.models import Product
 
@@ -25,11 +24,11 @@ def get_statistics(request: HttpRequest) -> HTTPResponse:
         customers = Customer.objects.annotate(count=Count("id"))  # активные клиенты
 
         ads = Ad.objects.annotate(
-            count_leads=Count('lead'),
+            count_leads=Count("lead"),
             company_success=ExpressionWrapper(
-                (Sum('product__contract__cost') - F('advertising_budget')),
-                output_field=DecimalField()
-            )
+                (Sum("product__contract__cost") - F("advertising_budget")),
+                output_field=DecimalField(),
+            ),
         )
 
         context = {
@@ -39,5 +38,4 @@ def get_statistics(request: HttpRequest) -> HTTPResponse:
             "customers": customers,
         }
         return render(request, "statisticsapp/index.html", context=context)
-    else:
-        return redirect("myauth:login")
+    return redirect("myauth:login")

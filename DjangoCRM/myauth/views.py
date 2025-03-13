@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 
 class MyLogoutView(LogoutView):
     """Класс для разлогирования пользователя"""
+
     next_page = reverse_lazy("myauth:login")
 
     def dispatch(self, request, *args, **kwargs):
@@ -17,4 +18,5 @@ class MyLogoutView(LogoutView):
 
 class AboutMe(TemplateView):
     """Класс для отображения информации о пользователе"""
+
     template_name = "myauth/about_me.html"

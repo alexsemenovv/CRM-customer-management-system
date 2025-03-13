@@ -1,12 +1,11 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
-    ListView,
     CreateView,
-    DetailView,
-    UpdateView,
     DeleteView,
-
+    DetailView,
+    ListView,
+    UpdateView,
 )
 
 from .models import Lead
@@ -14,14 +13,16 @@ from .models import Lead
 
 class LeadsListView(PermissionRequiredMixin, ListView):
     """Список всех потенциальных пользователей"""
+
     permission_required = "leadsapp.view_lead"
     template_name = "leadsapp/leads_list.html"
-    context_object_name = 'leads'
-    queryset = Lead.objects.prefetch_related('ad').all()
+    context_object_name = "leads"
+    queryset = Lead.objects.prefetch_related("ad").all()
 
 
 class LeadCreateView(PermissionRequiredMixin, CreateView):
     """Создание нового потенциального пользователя"""
+
     permission_required = "leadsapp.add_lead"
     template_name = "leadsapp/leads_create.html"
     model = Lead
@@ -31,6 +32,7 @@ class LeadCreateView(PermissionRequiredMixin, CreateView):
 
 class LeadDetailsView(PermissionRequiredMixin, DetailView):
     """Просмотр деталей потенциального пользователя"""
+
     permission_required = "leadsapp.view_lead"
     template_name = "leadsapp/leads_detail.html"
     model = Lead
@@ -38,6 +40,7 @@ class LeadDetailsView(PermissionRequiredMixin, DetailView):
 
 class LeadUpdateView(PermissionRequiredMixin, UpdateView):
     """Редактирование потенциального пользователя"""
+
     permission_required = "leadsapp.change_lead"
     template_name = "leadsapp/leads_update.html"
     model = Lead
@@ -56,6 +59,7 @@ class LeadUpdateView(PermissionRequiredMixin, UpdateView):
 
 class LeadDeleteView(PermissionRequiredMixin, DeleteView):
     """Удаление потенциального пользователя"""
+
     permission_required = "leadsapp.delete_lead"
     template_name = "leadsapp/leads_delete.html"
     model = Lead

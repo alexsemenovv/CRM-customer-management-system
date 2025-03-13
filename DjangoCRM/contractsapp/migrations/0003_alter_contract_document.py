@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contractsapp', '0002_remove_contract_end_date_remove_contract_start_date_and_more'),
+        (
+            "contractsapp",
+            "0002_remove_contract_end_date_remove_contract_start_date_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contract',
-            name='document',
-            field=models.FileField(null=True, upload_to='documents/', verbose_name='Файл с документом'),
+            model_name="contract",
+            name="document",
+            field=models.FileField(
+                null=True, upload_to="documents/", verbose_name="Файл с документом"
+            ),
         ),
     ]

@@ -5,18 +5,19 @@
     - Irina - Оператор
     - Evgeniy - Маркетолог
 """
+
 import random
 
+from adsapp.models import Ad
 from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
-
-from adsapp.models import Ad
 from leadsapp.models import Lead
 
 
 class AuthenticatedTestCase(TestCase):
     """Аутентификация пользователя и загрузка фикстур"""
+
     fixtures = [
         "fixtures/fixtures.xml",
     ]
@@ -27,6 +28,7 @@ class AuthenticatedTestCase(TestCase):
 
 
 class CreateLeadTestCase(AuthenticatedTestCase):
+    """Проверка создания лида"""
 
     def setUp(self):
         super().setUp()
@@ -47,7 +49,7 @@ class CreateLeadTestCase(AuthenticatedTestCase):
                 "phone_number": "+79518564321",
                 "email": "PetrNotFirst@gmail.com",
                 "ad": self.ad.id,
-            }
+            },
         )
         self.assertRedirects(response, reverse("leadsapp:leads_list"))
         self.assertTrue(Lead.objects.filter(email="PetrNotFirst@gmail.com").exists())
@@ -61,7 +63,7 @@ class CreateLeadTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Маркетолога
-        self.client.login(username='Evgeniy', password="Abc9517850219")
+        self.client.login(username="Evgeniy", password="Abc9517850219")
 
         # Пробуем создать лида
         response = self.client.post(
@@ -71,20 +73,18 @@ class CreateLeadTestCase(AuthenticatedTestCase):
                 "phone_number": "+79518564321",
                 "email": "PetrNotFirst@gmail.com",
                 "ad": self.ad,
-            }
+            },
         )
         self.assertEqual(response.status_code, 403)
 
 
 class DetailLeadTestCase(AuthenticatedTestCase):
+    """Проверка просмотра деталей лида"""
 
     def test_get_detail_leads(self):
         """Тест на просмотр деталей потенциального клиента"""
         response = self.client.get(
-            reverse("leadsapp:leads_detail",
-                    kwargs={"pk": 2}
-                    ),
-
+            reverse("leadsapp:leads_detail", kwargs={"pk": 2}),
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Сигал Стивен Петрович")
@@ -96,19 +96,17 @@ class DetailLeadTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Маркетолога
-        self.client.login(username='Evgeniy', password="Abc9517850219")
+        self.client.login(username="Evgeniy", password="Abc9517850219")
 
         # Отправляем запрос на просмотр потенциального клиента
         response = self.client.get(
-            reverse("leadsapp:leads_detail",
-                    kwargs={"pk": 2}
-                    ),
-
+            reverse("leadsapp:leads_detail", kwargs={"pk": 2}),
         )
         self.assertNotEqual(response.status_code, 200)
 
 
 class LeadListTestCase(AuthenticatedTestCase):
+    """Проверка просмотра списка лидов"""
 
     def test_list_leads(self):
         """Тест на просмотр списка потенциальных клиентов"""
@@ -128,7 +126,7 @@ class LeadListTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Маркетолога
-        self.client.login(username='Evgeniy', password="Abc9517850219")
+        self.client.login(username="Evgeniy", password="Abc9517850219")
 
         # Отправляем запрос на просмотр услуг
         response = self.client.get(reverse("leadsapp:leads_list"))
@@ -136,6 +134,8 @@ class LeadListTestCase(AuthenticatedTestCase):
 
 
 class UpdateLeadTestCase(AuthenticatedTestCase):
+    """Проверка обновления лида"""
+
     def setUp(self):
         super().setUp()
         self.ad = Ad.objects.filter(id=1).first()
@@ -151,9 +151,11 @@ class UpdateLeadTestCase(AuthenticatedTestCase):
                 "phone_number": str(random_number),
                 "email": "stiven.cool@gmail.com",
                 "ad": self.ad.id,
-            }
+            },
         )
-        self.assertRedirects(response, reverse("leadsapp:leads_detail", kwargs={"pk": 2}))
+        self.assertRedirects(
+            response, reverse("leadsapp:leads_detail", kwargs={"pk": 2})
+        )
         self.assertTrue(
             Lead.objects.filter(Q(pk=2) & Q(phone_number=random_number)).exists()
         )
@@ -165,7 +167,7 @@ class UpdateLeadTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Evgeniy', password="Abc9517850219")
+        self.client.login(username="Evgeniy", password="Abc9517850219")
 
         # Отправляем запрос на обновление потенциального клиента
         response = self.client.post(
@@ -175,12 +177,13 @@ class UpdateLeadTestCase(AuthenticatedTestCase):
                 "phone_number": str(1),
                 "email": "stiven.cool@gmail.com",
                 "ad": self.ad.id,
-            }
+            },
         )
         self.assertNotEqual(response.status_code, 200)
 
 
 class DeleteLeadTestCase(AuthenticatedTestCase):
+    """Проверка удаления лида"""
 
     def test_delete_leads(self):
         """Тест на удаление потенциального клиента"""
@@ -189,7 +192,7 @@ class DeleteLeadTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Администратора
-        self.client.login(username='admin', password="admin")
+        self.client.login(username="admin", password="admin")
 
         # Отправляем запрос на удаление потенциального клиента
         response = self.client.post(

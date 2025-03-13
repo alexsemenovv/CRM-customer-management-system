@@ -5,19 +5,20 @@
     - Svetlana - Менеджер
     - Irina - Operator
 """
+
 import random
 
+from contractsapp.models import Contract
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
-
-from contractsapp.models import Contract
 from productapp.models import Product
 
 
 class AuthenticatedTestCase(TestCase):
     """Аутентификация пользователя и загрузка фикстур"""
+
     fixtures = [
         "fixtures/fixtures.xml",
     ]
@@ -28,6 +29,7 @@ class AuthenticatedTestCase(TestCase):
 
 
 class CreateContractTestCase(AuthenticatedTestCase):
+    """Проверка создания контракта"""
 
     def setUp(self):
         super().setUp()
@@ -54,9 +56,9 @@ class CreateContractTestCase(AuthenticatedTestCase):
                 "document": test_file,  # Передаём файл
                 "date_signed": "2025-03-12",
                 "valid_until": "2025-03-23",
-                "cost": 99
+                "cost": 99,
             },
-            format="multipart"  # указываем для загрузки файлов
+            format="multipart",  # указываем для загрузки файлов
         )
         self.assertRedirects(response, reverse("contractsapp:contracts_list"))
         self.assertTrue(Contract.objects.filter(title="Новый контракт").exists())
@@ -70,7 +72,7 @@ class CreateContractTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # загружаем файл для загрузки
         test_file = SimpleUploadedFile(
@@ -86,22 +88,20 @@ class CreateContractTestCase(AuthenticatedTestCase):
                 "document": test_file,  # Передаём файл
                 "date_signed": "2025-03-12",
                 "valid_until": "2025-03-23",
-                "cost": 99
+                "cost": 99,
             },
-            format="multipart"  # указываем для загрузки файлов
+            format="multipart",  # указываем для загрузки файлов
         )
         self.assertEqual(response.status_code, 403)
 
 
 class DetailContractTestCase(AuthenticatedTestCase):
+    """Проверка просмотра деталей контракта"""
 
     def test_get_detail_contracts(self):
         """Тест на просмотр деталей контракта"""
         response = self.client.get(
-            reverse("contractsapp:contracts_detail",
-                    kwargs={"pk": 6}
-                    ),
-
+            reverse("contractsapp:contracts_detail", kwargs={"pk": 6}),
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Для Александры")
@@ -113,19 +113,17 @@ class DetailContractTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # Отправляем запрос на просмотр контракта
         response = self.client.get(
-            reverse("contractsapp:contracts_detail",
-                    kwargs={"pk": 6}
-                    ),
-
+            reverse("contractsapp:contracts_detail", kwargs={"pk": 6}),
         )
         self.assertNotEqual(response.status_code, 200)
 
 
 class ContractListTestCase(AuthenticatedTestCase):
+    """Проверка просмотра списка контрактов"""
 
     def test_list_contracts(self):
         """Тест на просмотр списка контрактов"""
@@ -145,7 +143,7 @@ class ContractListTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # Отправляем запрос на просмотр контрактов
         response = self.client.get(reverse("contractsapp:contracts_list"))
@@ -153,6 +151,8 @@ class ContractListTestCase(AuthenticatedTestCase):
 
 
 class UpdateContractTestCase(AuthenticatedTestCase):
+    """Проверка обновления контракта"""
+
     def setUp(self):
         super().setUp()
         self.product = Product.objects.filter(id=3).first()  # получаем услугу с id = 3
@@ -174,11 +174,13 @@ class UpdateContractTestCase(AuthenticatedTestCase):
                 "document": test_file,  # Передаём файл
                 "date_signed": "2025-03-12",
                 "valid_until": "2025-03-23",
-                "cost": random_number
+                "cost": random_number,
             },
-            format="multipart"  # указываем для загрузки файлов
+            format="multipart",  # указываем для загрузки файлов
         )
-        self.assertRedirects(response, reverse("contractsapp:contracts_detail", kwargs={"pk": 7}))
+        self.assertRedirects(
+            response, reverse("contractsapp:contracts_detail", kwargs={"pk": 7})
+        )
         self.assertTrue(
             Contract.objects.filter(Q(pk=7) & Q(cost=random_number)).exists()
         )
@@ -190,7 +192,7 @@ class UpdateContractTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Оператора
-        self.client.login(username='Irina', password="Abc9002973474")
+        self.client.login(username="Irina", password="Abc9002973474")
 
         # загружаем файл для загрузки
         test_file = SimpleUploadedFile(
@@ -206,14 +208,15 @@ class UpdateContractTestCase(AuthenticatedTestCase):
                 "document": test_file,  # Передаём файл
                 "date_signed": "2025-03-12",
                 "valid_until": "2025-03-23",
-                "cost": random_number
+                "cost": random_number,
             },
-            format="multipart"  # указываем для загрузки файлов
+            format="multipart",  # указываем для загрузки файлов
         )
         self.assertNotEqual(response.status_code, 200)
 
 
 class DeleteContractTestCase(AuthenticatedTestCase):
+    """Проверка удаления контракта"""
 
     def test_delete_contracts(self):
         """Тест на удаление контракта"""
@@ -222,7 +225,7 @@ class DeleteContractTestCase(AuthenticatedTestCase):
         self.client.logout()
 
         # выполняем login от имени Администратора
-        self.client.login(username='admin', password="admin")
+        self.client.login(username="admin", password="admin")
 
         # Отправляем запрос на удаление контракта
         response = self.client.post(

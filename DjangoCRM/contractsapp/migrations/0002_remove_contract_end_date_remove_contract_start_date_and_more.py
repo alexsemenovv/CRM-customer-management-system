@@ -6,26 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contractsapp', '0001_initial'),
+        ("contractsapp", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='contract',
-            name='end_date',
+            model_name="contract",
+            name="end_date",
         ),
         migrations.RemoveField(
-            model_name='contract',
-            name='start_date',
+            model_name="contract",
+            name="start_date",
         ),
         migrations.AddField(
-            model_name='contract',
-            name='date_signed',
-            field=models.DateField(blank=True, null=True, verbose_name='Дата заключения'),
+            model_name="contract",
+            name="date_signed",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Дата заключения"
+            ),
         ),
         migrations.AddField(
-            model_name='contract',
-            name='valid_until',
-            field=models.DateField(blank=True, null=True, verbose_name='Период действия'),
+            model_name="contract",
+            name="valid_until",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Период действия"
+            ),
         ),
     ]

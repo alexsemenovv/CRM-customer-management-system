@@ -1,9 +1,11 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
+    DeleteView,
+    DetailView,
     ListView,
-    DetailView, UpdateView, DeleteView,
+    UpdateView,
 )
 
 from .models import Product
@@ -11,14 +13,16 @@ from .models import Product
 
 class ProductsListView(PermissionRequiredMixin, ListView):
     """Список всех услуг"""
+
     permission_required = "productapp.view_product"
     template_name = "productapp/products_list.html"
-    context_object_name = 'products'
+    context_object_name = "products"
     queryset = Product.objects.all()
 
 
 class ProductCreateView(PermissionRequiredMixin, CreateView):
     """Создание новой услуги"""
+
     permission_required = "productapp.add_product"
     template_name = "productapp/products_create.html"
     model = Product
@@ -28,6 +32,7 @@ class ProductCreateView(PermissionRequiredMixin, CreateView):
 
 class ProductDetailsView(PermissionRequiredMixin, DetailView):
     """Просмотр деталей услуги"""
+
     permission_required = "productapp.view_product"
     template_name = "productapp/products_detail.html"
     model = Product
@@ -35,10 +40,11 @@ class ProductDetailsView(PermissionRequiredMixin, DetailView):
 
 class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     """Редактирование услуги"""
+
     permission_required = "productapp.change_product"
     template_name = "productapp/products_update.html"
     model = Product
-    fields = ['name', 'description', 'price']
+    fields = ["name", "description", "price"]
 
     def get_success_url(self):
         """После успешного обновления 'услуги' перенаправляемся на этот URL"""
@@ -50,6 +56,7 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
 
 class ProductDeleteView(PermissionRequiredMixin, DeleteView):
     """Удаление услуги"""
+
     permission_required = "productapp.delete_product"
     template_name = "productapp/products_delete.html"
     model = Product
