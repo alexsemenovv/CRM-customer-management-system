@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from datetime import datetime
 import sys
+from os import getenv
 from pathlib import Path
 
 from django.urls import reverse_lazy
@@ -21,13 +23,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_a_d=bdd^32q@!zb_pwix*jr9otof+985c*$c36vmb$ihr8(&4'
+SECRET_KEY = getenv(
+    "DJANGO_SECRET_KEY",
+    'django-insecure-_a_d=bdd^32q@!zb_pwix*jr9otof+985c*$c36vmb$ihr8(&4',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv("DJANGO_DEBUG", "0") == "1"
 TESTING = "test" in sys.argv
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "0.0.0.0",
+    "172.17.0.1",
+    "172.26.0.2"
+] + getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+
+
+
 
 # Application definition
 
@@ -94,8 +107,8 @@ else:
             'NAME': 'crm_db',
             'USER': 'admin',
             'PASSWORD': 'admin',
-            'HOST': 'localhost',
-            'PORT': '5433',
+            'HOST': 'db',
+            'PORT': '5432',
         }
     }
 
@@ -143,3 +156,42 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = reverse_lazy("myauth:about_me")  # куда перенаправить после входа
 
 LOGIN_URL = reverse_lazy("myauth:login")  # куда перенаправлять для входа
+
+LOGLEVEL = getenv("LOGLEVEL", "INFO") # по умолчанию INFO
+
+# Настройка логов
+LOGDIR = BASE_DIR / "logs"
+LOGDIR.mkdir(exist_ok=True)
+LOGFILE_NAME = LOGDIR / f"django_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
+LOGFILE_SIZE = 1 * 1024 * 1024  # 1мБ
+LOGFILE_COUNT = 3
+
+# Настройка логирования
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,  # параметр указывается для того, чтобы не отключать существующие логи
+    "formatters": {  # укаазание формата вывода
+        "verbose": {  # подробные логи
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "logfile": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": LOGFILE_NAME,  # имя файла
+            "backupCount": LOGFILE_COUNT,  # сколько файлов хранить
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": [
+            "console",
+            "logfile",
+        ],
+        "level": "INFO",
+    },
+}
