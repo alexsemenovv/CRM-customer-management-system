@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 import sys
 from datetime import datetime
 from os import getenv
@@ -33,10 +33,13 @@ SECRET_KEY = getenv(
 DEBUG = getenv("DJANGO_DEBUG", "0") == "1"
 TESTING = "test" in sys.argv
 
-ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "172.17.0.1", "172.26.0.2"] + getenv(
+ALLOWED_HOSTS = [
+                    "127.0.0.1",
+                    "0.0.0.0",
+                    "localhost",
+                ] + getenv(
     "DJANGO_ALLOWED_HOSTS", ""
 ).split(",")
-
 
 # Application definition
 
@@ -140,6 +143,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = BASE_DIR / "uploads"  # строим путь до папки с файлами
 MEDIA_URL = "/media/"
 

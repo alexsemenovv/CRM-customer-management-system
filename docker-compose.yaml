@@ -12,10 +12,11 @@ services:
     networks:
       - my_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d crm_db" ]
+      test: ["CMD-SHELL", "pg_isready -U admin -d crm_db"]
       interval: 10s
       timeout: 5s
       retries: 5
+
   app:
     build:
       dockerfile: ./Dockerfile
@@ -24,6 +25,7 @@ services:
         condition: service_healthy
     command: >
       sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
              python manage.py createsuperuser --no-input || true &&
              gunicorn DjangoCRM.wsgi:application --bind 0.0.0.0:8000"
     ports:
@@ -31,13 +33,26 @@ services:
     restart: always
     env_file:
       - .env
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "10"
-        max-size: "200k"
+    volumes:
+      - static_volume:/app/static
     networks:
       - my_network
+
+  nginx:
+    image: nginx:1.27.4
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/static  # Добавляем volume в nginx
+    networks:
+      - my_network
+
 networks:
   my_network:
     driver: bridge
+
+volumes:
+  static_volume:  # Volume для статики

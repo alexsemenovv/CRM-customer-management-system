@@ -11,4 +11,3 @@ RUN pip install -r requirements.txt
 
 COPY DjangoCRM .
 
-CMD ["gunicorn", "DjangoCRM.wsgi:application", "--bind", "0.0.0.0:8000"]
